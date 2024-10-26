@@ -1,27 +1,9 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { Kafka, Producer } from 'kafkajs';
+import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Producer } from 'kafkajs';
 
 @Injectable()
-export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
-  private kafka: Kafka;
-  private producer: Producer;
-
-  constructor() {
-    this.kafka = new Kafka({
-      brokers: (process.env.KAFKA_BROKERS || '').split(','),
-      ssl: false,
-      sasl: {
-        mechanism: 'plain',
-        username: process.env.KAFKA_SASL_USERNAME as string,
-        password: process.env.KAFKA_SASL_PASSWORD as string,
-      },
-    });
-    this.producer = this.kafka.producer();
-  }
-
-  async onModuleInit() {
-    await this.producer.connect();
-  }
+export class KafkaProducerService implements OnModuleDestroy {
+  constructor(@Inject('KAFKA_PRODUCER') private readonly producer: Producer) {}
 
   async onModuleDestroy() {
     await this.producer.disconnect();

@@ -8,8 +8,8 @@ import { Kafka, logLevel } from 'kafkajs';
   providers: [
     {
       provide: 'KAFKA_CLIENT',
-      useFactory: () => {
-        return new Kafka({
+      useFactory: async () => {
+        const kafka = new Kafka({
           brokers: (process.env.KAFKA_BROKERS || '').split(','),
           ssl: false,
           sasl: {
@@ -19,6 +19,18 @@ import { Kafka, logLevel } from 'kafkajs';
           },
           logLevel: logLevel.INFO,
         });
+
+        const admin = kafka.admin();
+        try {
+          await admin.connect();
+          console.log('Successfully connected to Kafka');
+        } catch (error) {
+          console.error('Failed to connect to Kafka:', error.message);
+        } finally {
+          await admin.disconnect();
+        }
+
+        return kafka;
       },
     },
     AppService,
