@@ -11,14 +11,14 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: /producer
+          - path: /api/producer
             pathType: Prefix
             backend:
               service:
                 name: producer
                 port:
                   number: {{ .Values.producer.service.port }}
-          - path: /consumer
+          - path: /api/consumer
             pathType: Prefix
             backend:
               service:

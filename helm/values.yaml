@@ -26,5 +26,5 @@ kafka:
 
 ingress:
   enabled: true
-  host: kafka-app.local
+  host: myapp.dev
   annotations: {}

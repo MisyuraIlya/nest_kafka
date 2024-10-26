@@ -9,36 +9,31 @@ async function bootstrap() {
     brokers: (process.env.KAFKA_BROKERS || '').split(','),
     ssl: false,
     sasl: {
-      mechanism: 'plain', // specify 'plain' as the mechanism
+      mechanism: 'plain',
       username: process.env.KAFKA_SASL_USERNAME as string,
       password: process.env.KAFKA_SASL_PASSWORD as string,
     },
     logLevel: logLevel.INFO,
   });
 
-  const producer = kafka.producer();
+  const consumer = kafka.consumer({ groupId: 'nestjs-consumer-group' });
 
-  producer.on('producer.connect', () => {
-    console.log('Successfully connected to Kafka');
+  await consumer.connect();
+  await consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
+
+  consumer.run({
+    eachMessage: async ({ topic, partition, message }) => {
+      console.log({
+        value: message.value.toString(),
+        topic,
+        partition,
+        key: message.key?.toString(),
+      });
+    },
   });
 
-  producer.on('producer.disconnect', () => {
-    console.log('Disconnected from Kafka');
-  });
-
-  producer.on('producer.network.request_timeout', (e) => {
-    console.error(`Kafka connection timeout: ${e}`);
-  });
-
-  try {
-    await producer.connect();
-    console.log('Producer successfully connected and ready to send messages.');
-  } catch (error) {
-    console.error(`Failed to connect to Kafka: ${error.message}`);
-  }
-
-  await app.listen(3000);
-  console.log('Producer service is running on port 3000');
+  await app.listen(3001);
+  console.log('Consumer service is running on port 3001');
 }
 
 bootstrap();
