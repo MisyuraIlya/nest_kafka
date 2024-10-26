@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer
+  labels:
+    app: kafka-app
+    component: producer
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: kafka-app
+      component: producer
+  template:
+    metadata:
+      labels:
+        app: kafka-app
+        component: producer
+    spec:
+      containers:
+        - name: producer
+          image: "{{ .Values.producer.image.repository }}:{{ .Values.producer.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.producer.service.port }}
+          env:
+            - name: KAFKA_BROKERS
+              value: "{{ join "," .Values.kafka.brokers }}" # Correct usage of join
+            - name: KAFKA_SASL_USERNAME
+              value: "{{ .Values.kafka.sasl.username }}"
+            - name: KAFKA_SASL_PASSWORD
+              value: "{{ .Values.kafka.sasl.password }}"
+            - name: KAFKA_SASL_MECHANISM
+              value: "{{ .Values.kafka.sasl.mechanism }}"

@@ -1,0 +1,30 @@
+replicaCount: 1
+
+producer:
+  image:
+    repository: producer-app
+    tag: latest
+  service:
+    port: 3000
+
+consumer:
+  image:
+    repository: consumer-app
+    tag: latest
+  service:
+    port: 3001
+
+kafka:
+  brokers:
+    - "kafka-controller-0.kafka-controller-headless.default.svc.cluster.local:9092"
+    - "kafka-controller-1.kafka-controller-headless.default.svc.cluster.local:9092"
+    - "kafka-controller-2.kafka-controller-headless.default.svc.cluster.local:9092"
+  sasl:
+    username: user1
+    password: i92YMaRjZl
+    mechanism: plain
+
+ingress:
+  enabled: true
+  host: kafka-app.local
+  annotations: {}

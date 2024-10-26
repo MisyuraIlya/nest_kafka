@@ -1,0 +1,24 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: kafka-app
+build:
+  artifacts:
+    - image: producer-app
+      context: ./producer-app
+      docker:
+        dockerfile: Dockerfile
+    - image: consumer-app
+      context: ./consumer-app
+      docker:
+        dockerfile: Dockerfile
+deploy:
+  helm:
+    releases:
+      - name: kafka-app
+        chartPath: ./helm
+        setValues:
+          producer.image.repository: producer-app
+          consumer.image.repository: consumer-app
+          ingress.enabled: true
+          ingress.host: kafka-app.local

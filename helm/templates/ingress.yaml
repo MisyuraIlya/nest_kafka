@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kafka-app-ingress
+  labels:
+    app: kafka-app
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /producer
+            pathType: Prefix
+            backend:
+              service:
+                name: producer
+                port:
+                  number: {{ .Values.producer.service.port }}
+          - path: /consumer
+            pathType: Prefix
+            backend:
+              service:
+                name: consumer
+                port:
+                  number: {{ .Values.consumer.service.port }}

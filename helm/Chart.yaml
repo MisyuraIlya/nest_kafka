@@ -1,0 +1,4 @@
+apiVersion: v2
+name: all-in-one-chart
+description: A single Helm chart for consumer, producer, RabbitMQ, and Ingress
+version: 0.1.0
